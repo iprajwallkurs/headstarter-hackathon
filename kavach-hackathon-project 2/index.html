@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
+    <title>Kavach</title>
+    <style>
+        #submitBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-xxxxxxxxxx"></script>
+<script>
+   window.dataLayer = window.dataLayer || [];
+   function gtag(){dataLayer.push(arguments);}
+   gtag('js', new Date());
+   
+   gtag('config', 'G-xxxxxxxxxx');
+</script>
+   <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+      </script>
+      <script defer src="/_vercel/insights/script.js"></script>
+</head>
+
+<body>
+    <section class="main" style="background-image: url(images/bg.jpg);">
+        <header class="container">
+            <nav>
+                <div class="logo" data-v-component-site>
+                    <a href="index.html" data-v-url-params='{"host":"www.*.*"}'></a>
+                </div>
+                <div class="social-icon">
+                    <ul class="list-inline mb-0 d-flex align-items-center"></ul>
+                </div>
+            </nav>
+        </header>
+
+        <section class="newsletter-area">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <h5 class="has-line">Kavach Coming Soon</h5>
+                        <h1>Join our waitlist & get notified when we launch.</h1>
+                        
+                        <div class="" data-v-component-plugin-contact-form-form data-v-storage="database" data-v-name="notify-me">
+                            <div class="notifications" data-v-notifications></div>
+                        </div>          
+                                            
+                        <form onsubmit="return false;">
+                            <div class="form-group">
+                                <input type="email" name="email" placeholder="Enter your email" required id="emailInput">
+                                <button type="button" id="submitBtn" disabled>Notify Me</button>
+                            </div>
+
+                            <!-- SweetAlert2 JS -->
+                            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+
+                            <script type="module">
+                                import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+                                import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
+                                
+                                const firebaseConfig = {
+                                    apiKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                                    authDomain: "kavach-hackathon-project.firebaseapp.com",
+                                    projectId: "kavach-hackathon-project",
+                                    storageBucket: "kavach-hackathon-project.appspot.com",
+                                    messagingSenderId: "xxxxxxxxxxxx",
+                                    appId: "x:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                                    measurementId: "G-xxxxxxxxxx"
+                                };
+                                
+                                try {
+                                    const app = initializeApp(firebaseConfig);
+                                    const db = getFirestore(app);
+                                    console.log("Firebase initialized successfully");
+
+                                    const emailInput = document.getElementById('emailInput');
+                                    const submitBtn = document.getElementById('submitBtn');
+                                    
+                                    function validateEmail(email) {
+                                        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                                        return re.test(String(email).toLowerCase());
+                                    }
+
+                                    emailInput.addEventListener('input', () => {
+                                        const email = emailInput.value.trim();
+                                        submitBtn.disabled = !email || !validateEmail(email);
+                                    });
+                                    
+                                    submitBtn.addEventListener('click', async () => {
+                                        const email = emailInput.value.trim();
+                                        
+                                        if (!email || !validateEmail(email)) {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Invalid Email',
+                                                text: 'Please enter a valid email address.',
+                                            });
+                                            return;
+                                        }
+
+                                        const timestamp = new Date();
+                                    
+                                        try {
+                                            const docRef = await addDoc(collection(db, "kavach-db"), {
+                                                email: email,
+                                                timestamp: timestamp
+                                            });
+                                            console.log("Document written with ID: ", docRef.id);
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Success!',
+                                                text: 'Email submitted successfully!',
+                                            });
+                                            emailInput.value = '';
+                                            submitBtn.disabled = true;
+                                        } catch (e) {
+                                            console.error("Error adding document: ", e);
+                                            console.error("Error details:", e.message, e.code);
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Oops...',
+                                                text: `Error submitting email: ${e.message}`,
+                                            });
+                                        }
+                                    });
+                                } catch (error) {
+                                    console.error("Error initializing Firebase:", error);
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Firebase Initialization Failed',
+                                        text: `Error: ${error.message}`,
+                                    });
+                                }
+                            </script>
+                        </form>                        
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="xs-bg d-md-none d-lg-none">
+            <img src="images/xs.jpg" alt="img" class="img-fluid w-100">
+        </section>
+    </section>
+</body>
+</html>
